@@ -1,19 +1,10 @@
-version: '3'
+version: '3.8'
 services:
-  db:
-    image: postgres
-    restart: always
-    volumes:
-      - ./data/db:/var/lib/postgresql/data
+  dev-db:
+    image: postgres:13
     ports:
-      - "5432:5432"
+      - 5434:5432
     environment:
-      POSTGRES_DB: testDB
-      POSTGRES_USER: postgres
-      POSTGRES_PASSWORD: postgres
-
-  adminer:
-    image: adminer
-    restart: always
-    ports:
-      - "8080:8080"
+      POSTGRES_USER: Belka_Br
+      POSTGRES_PASSWORD: Coonore26
+      POSTGRES_DB: nest_postgres
