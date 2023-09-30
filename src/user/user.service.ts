@@ -48,17 +48,30 @@ export class UserService {
   }
 
   public async getUserInfo(userId: string): Promise<User> {
-    const user = await this._findUser({ id: userId });
+    const user = await this.findUser({ id: userId });
 
     return user;
   }
 
   public async findOne(loginUserDto: LoginUserDto): Promise<ITAuthResponse> {
-    const user = await this._findUser({ email: loginUserDto.email });
+    const user = await this.findUser({ email: loginUserDto.email });
 
     if (await compareHash(loginUserDto.password, user.password as string))
       return await this._signToken(user);
     throw new HttpException('Wrong password', HttpStatus.BAD_REQUEST);
+  }
+
+  public async findUser(findWhere: any): Promise<User | any> {
+    const user = await this._prismaService.user.findFirst({
+      where: {
+        ...findWhere,
+      },
+    });
+    if (!user) {
+      throw new HttpException('User not found', HttpStatus.BAD_REQUEST);
+    } else {
+      return user;
+    }
   }
 
   private async _signToken(user: User): Promise<ITAuthResponse> {
@@ -70,18 +83,5 @@ export class UserService {
     return {
       token: await this._jwtService.signAsync(payload),
     };
-  }
-
-  private async _findUser(findWhere: any): Promise<User> {
-    const user = await this._prismaService.user.findFirst({
-      where: {
-        ...findWhere,
-      },
-    });
-    if (!user) {
-      throw new HttpException('User not found', HttpStatus.BAD_REQUEST);
-    } else {
-      return user;
-    }
   }
 }

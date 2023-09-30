@@ -11,12 +11,14 @@ export class AuthController {
 
   @Post('signup')
   public async signup(@Body() createUserDto: RegisterUserDto): Promise<ITAuthResponse> {
-    const user = await this._userService.createUser(createUserDto);
-    return user;
+    const token = await this._userService.createUser(createUserDto);
+    return token;
   }
 
   @Post('signin')
   public async signin(@Body() loginUserDto: LoginUserDto): Promise<ITAuthResponse> {
-    return await this._userService.findOne(loginUserDto)
+    const token = await this._userService.findOne(loginUserDto);
+    
+    return token;
   }
 }
