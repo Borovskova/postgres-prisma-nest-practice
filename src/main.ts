@@ -14,10 +14,10 @@ async function bootstrap() {
     }),
   );
   const config = new DocumentBuilder()
-    .setTitle('Postgres/prisma education')
-    .setDescription('Postgres/prisma API description')
+    .setTitle('Postgres/Prisma education')
+    .setDescription('Postgres/Prisma API description')
     .setVersion('1.0')
-    .addTag('Postgres/prismaEducation')
+    .addTag('Postgres/PrismaEducation')
     .build();
 
   const document = SwaggerModule.createDocument(app, config);

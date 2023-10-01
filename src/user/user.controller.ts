@@ -1,16 +1,65 @@
-import { Controller, Get, UseGuards, Request } from '@nestjs/common';
+import {
+  Controller,
+  Get,
+  Patch,
+  Delete,
+  UseGuards,
+  Request,
+  Body,
+  Param,
+  HttpException,
+  HttpStatus,
+} from '@nestjs/common';
 import { User } from '@prisma/client';
 
 import { UserService } from './user.service';
 import { AuthGuard } from 'src/auth/guards/auth.guard';
+import { UpdateUserDto } from './dto/update-user-dto';
 
+@UseGuards(AuthGuard)
 @Controller('users')
 export class UserController {
-  constructor(private _usersService: UserService) {}
+  constructor(
+    private _usersService: UserService,
+  ) {}
 
   @Get('me')
-  @UseGuards(AuthGuard)
-  public async getUser(@Request() req): Promise<User> {
-    return this._usersService.getUserInfo(req.user.id);
+  public async getUser(
+    @Request() req,
+  ): Promise<User> {
+    return this._usersService.getUserInfo(
+      req.user.id,
+    );
+  }
+
+  @Patch(':userId')
+  public async updateUser(
+    @Body() updateUserDto: UpdateUserDto,
+    @Param('userId') userId: string,
+    @Request() req,
+  ): Promise<User> {
+    if (+userId !== req.user.id)
+      throw new HttpException(
+        'You can edit only your own profile',
+        HttpStatus.BAD_REQUEST,
+      );
+
+    return this._usersService.updateUserInfo(
+      +userId,
+      updateUserDto,
+    );
+  }
+
+  @Delete('delete/:userId')
+  public async deleteUser(
+    @Param('userId') userId: string,
+    @Request() req,
+  ): Promise<any> {
+    if (+userId !== req.user.id)
+      throw new HttpException(
+        'You can remove only your own profile',
+        HttpStatus.BAD_REQUEST,
+      );
+    return this._usersService.deleteUser(+userId);
   }
 }
