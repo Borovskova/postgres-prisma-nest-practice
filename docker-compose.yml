@@ -5,6 +5,6 @@ services:
     ports:
       - 5434:5432
     environment:
-      POSTGRES_USER: Belka_Br
-      POSTGRES_PASSWORD: Coonore26
-      POSTGRES_DB: nest_postgres
+      POSTGRES_USER: ${POSTGRES_USERNAME}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
+      POSTGRES_DB: ${POSTGRES_DATABASE}
