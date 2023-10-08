@@ -19,6 +19,7 @@ import { ITAuthResponse } from 'src/auth/interfaces/auth.interface';
 
 import { PrismaService } from 'src/prisma/prisma.service';
 import { IDefaultResponse } from 'src/interfaces/default-request-response';
+import { SocketTasks } from 'src/sockets/socket.tasks';
 
 export const PasswordSaltLength = 4;
 
@@ -27,6 +28,7 @@ export class UserService {
   constructor(
     private _prismaService: PrismaService,
     private _jwtService: JwtService,
+    private _socketTasks:SocketTasks
   ) {}
 
   public async createUser(
@@ -62,7 +64,7 @@ export class UserService {
   }
 
   public async getUserInfo(
-    userId: string,
+    userId: number,
   ): Promise<User> {
     const user = await this.findUser({
       id: userId,
@@ -136,6 +138,8 @@ export class UserService {
         HttpStatus.BAD_REQUEST,
       );
 
+    this._socketTasks.sendMessageForSubscribers(userUdated)
+    
     return userUdated;
   }
 

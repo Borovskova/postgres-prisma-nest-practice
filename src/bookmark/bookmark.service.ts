@@ -11,11 +11,13 @@ import { PrismaService } from 'src/prisma/prisma.service';
 import { CreateBookmarkDto } from './dto/new-bookmark-dto';
 import { UpdateBookmarkDto } from './dto/update-bookmark-dto';
 import { IDefaultResponse } from 'src/interfaces/default-request-response';
+import { SocketTasks } from 'src/sockets/socket.tasks';
 
 @Injectable()
 export class BookmarkService {
   constructor(
-    private _prismaService: PrismaService
+    private _prismaService: PrismaService,
+    private _socketTasks:SocketTasks
   ) {}
 
   public async createNewBookmark(
@@ -39,6 +41,7 @@ export class BookmarkService {
           ...dto,
         },
       });
+      this._socketTasks.sendMessageForSubscribers(newBookmark)
 
     return newBookmark;
   }

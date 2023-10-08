@@ -17,7 +17,6 @@ import { BookmarkService } from './bookmark.service';
 
 import { CreateBookmarkDto } from './dto/new-bookmark-dto';
 import { UpdateBookmarkDto } from './dto/update-bookmark-dto';
-import { IDefaultResponse } from 'src/interfaces/default-request-response';
 
 @UseGuards(AuthGuard)
 @Controller('bookmark')

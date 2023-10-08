@@ -28,7 +28,7 @@ export class UserController {
     @Request() req,
   ): Promise<User> {
     return this._usersService.getUserInfo(
-      req.user.id,
+      +req.user.id,
     );
   }
 

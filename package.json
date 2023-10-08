@@ -26,6 +26,7 @@
     "test:e2e": "jest --config ./test/jest-e2e.json"
   },
   "dependencies": {
+    "@nestjs/cache-manager": "^2.1.0",
     "@nestjs/common": "^9.0.0",
     "@nestjs/config": "^3.1.1",
     "@nestjs/core": "^9.0.0",
@@ -33,12 +34,15 @@
     "@nestjs/platform-express": "^9.0.0",
     "@nestjs/platform-ws": "^9.4.2",
     "@nestjs/swagger": "^7.1.11",
+    "@nestjs/websockets": "^9.4.2",
     "@prisma/client": "^5.3.1",
     "bcrypt": "^5.1.1",
+    "cache-manager": "^5.2.3",
     "class-transformer": "^0.5.1",
     "class-validator": "^0.14.0",
     "reflect-metadata": "^0.1.13",
-    "rxjs": "^7.2.0"
+    "rxjs": "^7.2.0",
+    "ws": "^8.13.0"
   },
   "devDependencies": {
     "@nestjs/cli": "^9.0.0",
