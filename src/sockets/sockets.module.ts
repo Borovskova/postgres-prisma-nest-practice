@@ -7,6 +7,6 @@ import { SocketTasks } from './socket.tasks';
 @Module({
   imports: [CacheModule.register()],
   providers: [SocketsGateway, SocketTasks],
-  exports:[SocketTasks]
+  exports: [SocketTasks],
 })
 export class SocketsModule {}

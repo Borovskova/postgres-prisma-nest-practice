@@ -8,7 +8,14 @@ import { BookmarkModule } from './bookmark/bookmark.module';
 import { SocketsModule } from './sockets/sockets.module';
 
 @Module({
-  imports: [PrismaModule, ConfigModule.forRoot({isGlobal:true}), AuthModule, UserModule, BookmarkModule, SocketsModule],
+  imports: [
+    PrismaModule,
+    ConfigModule.forRoot({ isGlobal: true }),
+    AuthModule,
+    UserModule,
+    BookmarkModule,
+    SocketsModule,
+  ],
   controllers: [],
   providers: [],
 })

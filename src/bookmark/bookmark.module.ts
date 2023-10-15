@@ -5,8 +5,8 @@ import { UserModule } from 'src/user/user.module';
 import { SocketsModule } from 'src/sockets/sockets.module';
 
 @Module({
-  imports:[UserModule, SocketsModule],
+  imports: [UserModule, SocketsModule],
   providers: [BookmarkService],
-  controllers: [BookmarkController]
+  controllers: [BookmarkController],
 })
 export class BookmarkModule {}

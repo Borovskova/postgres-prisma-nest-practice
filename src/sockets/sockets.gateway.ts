@@ -164,9 +164,6 @@ export class SocketsGateway
           }
         }
       } else {
-        this.cacheManager.del(
-          currentSocketsEventInfo,
-        );
         return;
       }
     });
@@ -223,6 +220,9 @@ export class SocketsGateway
       await this.cacheManager.get(
         currentSocketsEventInfo,
       );
+    const currentSocketsEventList = JSON.parse(
+      currentSocketsEventInfoFromCache,
+    );
 
     if (
       !currentSocketsEventInfoFromCache ||
@@ -231,33 +231,49 @@ export class SocketsGateway
     )
       return;
 
-    const subscribeEventInCacheIdx = JSON.parse(
-      currentSocketsEventInfoFromCache,
-    ).findIndex(
-      (item) =>
-        data.event.indexOf(item.event) !== -1,
+    const clientInArray = this.clients.find(
+      (item) => item.client === client,
     );
+    const subscribeEventInCacheIdx =
+      currentSocketsEventList.findIndex(
+        (item) =>
+          data.event.indexOf(item.event) !== -1 &&
+          clientInArray.clientId ===
+            item.data.clientId,
+      );
+
     if (subscribeEventInCacheIdx !== -1) {
-      JSON.parse(
-        currentSocketsEventInfoFromCache,
-      ).splice(subscribeEventInCacheIdx, 1);
+      currentSocketsEventList.splice(
+        subscribeEventInCacheIdx,
+        1,
+      );
+      const currentSocketsEventUpdated =
+        JSON.stringify(currentSocketsEventList);
       await this.cacheManager.set(
         currentSocketsEventInfo,
-        JSON.stringify(
-          currentSocketsEventInfoFromCache,
-        ),
+        currentSocketsEventUpdated,
         100000,
       );
-      const clientForRemoveIdx =
-        this.clients.findIndex(
-          (item) => item.client === client,
+      const findActiveEvents =
+        currentSocketsEventList.find(
+          (event) =>
+            event.data.clientId ===
+            clientInArray.clientId,
         );
-      clientForRemoveIdx !== -1
-        ? this.clients.splice(
-            clientForRemoveIdx,
-            1,
-          )
-        : null;
+      if (!findActiveEvents) {
+        const clientForRemoveIdx =
+          this.clients.findIndex(
+            (item) => item.client === client,
+          );
+        clientForRemoveIdx !== -1
+          ? this.clients.splice(
+              clientForRemoveIdx,
+              1,
+            )
+          : null;
+
+        client.close(4000, 'Dissconnected');
+      }
     }
   }
 
@@ -265,11 +281,11 @@ export class SocketsGateway
     data: any,
     client: WebSocket,
   ): Promise<void> {
-    let findUserInSubscribersArray =
+    let findSubscriberInClientsArray =
       this.clients.find(
         (item) => item.client === client,
       );
-    if (!findUserInSubscribersArray) {
+    if (!findSubscriberInClientsArray) {
       client.close(
         4000,
         'Client is not connected',
@@ -284,7 +300,7 @@ export class SocketsGateway
     ) {
       const userPermissionInfo: ITUserSubscribePermission =
         getUserPermitionToSubscribeInfo(
-          findUserInSubscribersArray,
+          findSubscriberInClientsArray,
           +data.userId,
         );
 
@@ -297,10 +313,12 @@ export class SocketsGateway
         return;
       }
     }
-    findUserInSubscribersArray.clientId =
-      generateUniqueId();
+    !findSubscriberInClientsArray.clientId
+      ? (findSubscriberInClientsArray.clientId =
+          generateUniqueId())
+      : null;
     data.clientId =
-      findUserInSubscribersArray.clientId;
+      findSubscriberInClientsArray.clientId;
 
     const socketEventInfo: ITDefaultSocketResponse =
       {

@@ -12,12 +12,13 @@ import { CreateBookmarkDto } from './dto/new-bookmark-dto';
 import { UpdateBookmarkDto } from './dto/update-bookmark-dto';
 import { IDefaultResponse } from 'src/interfaces/default-request-response';
 import { SocketTasks } from 'src/sockets/socket.tasks';
+import { avialiableWebSocketEvents } from 'src/constants/socket.events';
 
 @Injectable()
 export class BookmarkService {
   constructor(
     private _prismaService: PrismaService,
-    private _socketTasks:SocketTasks
+    private _socketTasks: SocketTasks,
   ) {}
 
   public async createNewBookmark(
@@ -41,7 +42,10 @@ export class BookmarkService {
           ...dto,
         },
       });
-      this._socketTasks.sendMessageForSubscribers(newBookmark)
+    this._socketTasks.sendMessageForSubscribers(
+      avialiableWebSocketEvents.userNewBookmark,
+      newBookmark,
+    );
 
     return newBookmark;
   }

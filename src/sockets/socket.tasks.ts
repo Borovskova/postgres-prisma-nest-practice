@@ -19,60 +19,63 @@ export class SocketTasks {
   ) {}
 
   public async sendMessageForSubscribers(
+    event: avialiableWebSocketEvents,
     dataForSend?: any,
   ): Promise<void> {
     const socketEventsInfo: string =
       await this._cacheManager.get(
         currentSocketsEventInfo,
       );
+
     if (
       !socketEventsInfo ||
       socketEventsInfo === undefined
     )
       return;
 
+    let socketMessageData = null;
+    let clientId: string | null = null;
+
     for (const socketEvent of JSON.parse(
       socketEventsInfo,
     )) {
-      let socketMessageData = null;
+      if (event === socketEvent.event) {
+        clientId = socketEvent.data.clientId;
 
-      switch (socketEvent.event) {
-        case avialiableWebSocketEvents.userInfo: {
-          socketMessageData =
-            dataForSend &&
-            +socketEvent.data.userId ===
-              dataForSend.id
+        switch (socketEvent.event) {
+          case avialiableWebSocketEvents.userInfo: {
+            socketMessageData = dataForSend
               ? dataForSend
               : null;
-          break;
-        }
-        case avialiableWebSocketEvents.userNewBookmark: {
-          socketMessageData =
-            dataForSend &&
-            +socketEvent.data.userId ===
-              dataForSend.userId
-              ? dataForSend
-              : null;
-          break;
-        }
+            break;
+          }
+          case avialiableWebSocketEvents.userNewBookmark: {
+            socketMessageData =
+              dataForSend &&
+              +socketEvent.data.userId ===
+                dataForSend.userId
+                ? dataForSend
+                : null;
+            break;
+          }
 
-        default:
-          return;
+          default:
+            return;
+        }
       }
-
-      if (socketMessageData) {
-        const exactUserId =
-          socketEvent.event ===
-          avialiableWebSocketEvents.userNewBookmark
-            ? true
-            : false;
-        this._socketsGateway.sendMessage(
-          socketEvent.event,
-          socketMessageData,
-          socketEvent.data.clientId,
-          exactUserId,
-        );
-      }
+    }
+    if (socketMessageData) {
+      const exactUserId =
+        event ===
+        avialiableWebSocketEvents.userNewBookmark
+          ? true
+          : false;
+      this._socketsGateway.sendMessage(
+        event,
+        socketMessageData,
+        clientId,
+        exactUserId,
+      );
     }
   }
 }
